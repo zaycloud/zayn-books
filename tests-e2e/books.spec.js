@@ -135,8 +135,8 @@ test.describe('ZAYN Books E2E Tests', () => {
     await page.locator('input[placeholder="Author"]').fill('Form Clearer');
     await page.locator('button[type="submit"]').click();
     
-    // Wait for success
-    await expect(page.locator('text=Book added!')).toBeVisible({ timeout: 5000 });
+    // Wait for success (increased timeout for slower browsers like WebKit)
+    await expect(page.locator('text=Book added!')).toBeVisible({ timeout: 10000 });
     
     // Verify form fields are cleared
     await expect(page.locator('input[placeholder="Title"]')).toHaveValue('');

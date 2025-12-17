@@ -28,3 +28,8 @@ coverage/
 # Logs
 *.log
 npm-debug.log*
+
+# Markdown files (except README.md)
+PROJECT_EXPLANATION.md
+SECURITY-ANALYSIS.md
+.gemini_security/
