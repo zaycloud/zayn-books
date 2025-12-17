@@ -29,7 +29,7 @@ coverage/
 *.log
 npm-debug.log*
 
-# Markdown files (except README.md)
-PROJECT_EXPLANATION.md
-SECURITY-ANALYSIS.md
+# Ignore all Markdown files except README.md
+*.md
+!README.md
 .gemini_security/
