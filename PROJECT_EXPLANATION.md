@@ -40,7 +40,7 @@ The ZAYN Books application allows users to:
 It's a simple but complete CRUD application:
 - **C**reate (add books)
 - **R**ead (view books)
-- **U**pdate (modify books - the code supports it)
+- **U**pdate (modify books - the backend API supports this via PUT endpoint, though it's not in the frontend UI)
 - **D**elete (remove books)
 
 ---
@@ -869,7 +869,8 @@ build:
 
 ### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/zaycloud/zayn-books.git
+# Replace YOUR_USERNAME with your actual GitHub username
+git clone https://github.com/YOUR_USERNAME/zayn-books.git
 cd zayn-books
 ```
 
@@ -975,7 +976,7 @@ db.run(sql, params, function (err) { ... });
 **Why:** The `?` placeholders prevent SQL injection attacks.
 
 **What's SQL Injection?** A hacking technique where attackers try to insert malicious SQL code. Example:
-```
+```sql
 Title: "; DROP TABLE books; --
 ```
 Without prepared statements, this could delete your entire database!
