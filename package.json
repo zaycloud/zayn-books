@@ -1,12 +1,14 @@
 {
-  "name": "zayn-books-frontend",
+  "name": "zayn-books",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:backend": "cd backend && npm start",
     "build": "vite build",
-    "preview": "vite preview",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "cd backend && npm test",
     "test:e2e": "npx playwright test",
     "test:e2e:ui": "npx playwright test --ui"
   },

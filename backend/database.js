@@ -1,13 +1,15 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
-// Connect to the database file (or create it if missing)
-const dbPath = path.resolve(__dirname, 'books.sqlite');
+// Use in-memory database for tests, file-based for production
+const isTest = process.env.NODE_ENV === 'test';
+const dbPath = isTest ? ':memory:' : path.resolve(__dirname, 'books.sqlite');
+
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('Error opening database:', err.message);
   } else {
-    console.log('Connected to the SQLite database.');
+    console.log('Connected to the SQLite database.' + (isTest ? ' (test mode)' : ''));
   }
 });
 

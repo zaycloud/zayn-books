@@ -26,11 +26,11 @@ app.get('/api/books', (req, res) => {
   });
 });
 
-// 2. CREATE A BOOK
+
 app.post('/api/books', (req, res) => {
   const { title, author, year, genre } = req.body;
   
-  // VG Requirement: Input Validation
+  
   if (!title || !author) {
     res.status(400).json({ error: 'Title and Author are required' });
     return;
