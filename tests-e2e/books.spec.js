@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
 
 // E2E Test Suite for ZAYN Books Application
 // Requirement: 5 E2E tests for the Final Assignment
