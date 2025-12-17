@@ -82,6 +82,11 @@ test.describe('ZAYN Books E2E Tests', () => {
     // Wait for the book to be added
     await expect(page.locator('text=Book added!')).toBeVisible({ timeout: 5000 });
     
+    // Handle the confirmation dialog (window.confirm)
+    page.on('dialog', async dialog => {
+      await dialog.accept();
+    });
+
     // Find the specific book item and click its delete button
     const bookItem = page.locator('li').filter({ hasText: uniqueTitle }).first();
     await bookItem.locator('button').click();

@@ -1,48 +1,49 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 
 function App() {
-  const [books, setBooks] = useState([])
-  const [newBook, setNewBook] = useState({ title: '', author: '', year: '', genre: '' })
-  const [message, setMessage] = useState('')
+  const [books, setBooks] = useState([]);
+  const [newBook, setNewBook] = useState({ title: '', author: '', year: '', genre: '' });
+  const [message, setMessage] = useState('');
 
   // 1. READ (Get all books)
   useEffect(() => {
-    fetchBooks()
-  }, [])
+    fetchBooks();
+  }, []);
 
   const fetchBooks = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/books')
-      const data = await res.json()
+      const res = await fetch('http://localhost:3000/api/books');
+      const data = await res.json();
       if (data.data) {
-        setBooks(data.data)
+        setBooks(data.data);
       }
     } catch (err) {
-      console.error(err)
-      setMessage('Error fetching books')
+      console.error(err);
+      setMessage('Error fetching books');
     }
-  }
+  };
 
   // 2. CREATE (Add a book)
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
       const res = await fetch('http://localhost:3000/api/books', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newBook)
-      })
+      });
       if (res.ok) {
-        setMessage('Book added!')
-        setNewBook({ title: '', author: '', year: '', genre: '' })
-        fetchBooks() // Refresh list
+        setMessage('Book added!');
+        setNewBook({ title: '', author: '', year: '', genre: '' });
+        fetchBooks(); // Refresh list
       } else {
-        setMessage('Error adding book')
+        setMessage('Error adding book');
       }
     } catch (err) {
-      setMessage('Error adding book')
+      console.error(err);
+      setMessage('Error adding book');
     }
-  }
+  };
 
   // 3. DELETE (Remove a book) - with confirmation
   const handleDelete = async (id) => {
@@ -54,15 +55,16 @@ function App() {
     try {
       const res = await fetch(`http://localhost:3000/api/books/${id}`, {
         method: 'DELETE'
-      })
+      });
       if (res.ok) {
-        setMessage('Book deleted!')
-        fetchBooks() // Refresh list
+        setMessage('Book deleted!');
+        fetchBooks(); // Refresh list
       }
     } catch (err) {
-      setMessage('Error deleting book')
+      console.error(err);
+      setMessage('Error deleting book');
     }
-  }
+  };
 
   return (
     <div style={{ 
@@ -161,7 +163,7 @@ function App() {
         ))}
       </ul>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
