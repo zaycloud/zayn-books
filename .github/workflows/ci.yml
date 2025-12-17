@@ -9,11 +9,71 @@ on:
 
 jobs:
   # ============================================
-  # JOB 1: Backend Unit Tests (Vitest)
+  # JOB 1: Linting (ESLint) - Kodkvalitetskontroll
+  # ============================================
+  lint:
+    name: 🔍 Lint (ESLint)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install frontend dependencies
+        run: npm ci
+      
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm ci
+      
+      - name: Lint Frontend (React)
+        run: npm run lint
+      
+      - name: Lint Backend (Node.js)
+        run: npm run lint:backend
+
+  # ============================================
+  # JOB 2: Security Scan (npm audit) - Säkerhetskontroll
+  # ============================================
+  security:
+    name: 🛡️ Security Scan (npm audit)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install frontend dependencies
+        run: npm ci
+      
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm ci
+      
+      - name: Security Audit Frontend
+        run: npm audit --audit-level=high || true
+      
+      - name: Security Audit Backend
+        working-directory: ./backend
+        run: npm audit --audit-level=high || true
+
+  # ============================================
+  # JOB 3: Backend Unit Tests (Vitest)
   # ============================================
   unit-tests:
     name: 🧪 Unit Tests (Vitest)
     runs-on: ubuntu-latest
+    needs: [lint, security]  # Run after lint and security pass
     
     steps:
       - name: Checkout code
@@ -100,11 +160,16 @@ jobs:
         working-directory: ./backend
         run: npm ci
       
+      - name: Build Frontend for Production
+        run: npm run build
+      
       - name: Install Playwright Browser (${{ matrix.browser }})
         run: npx playwright install --with-deps ${{ matrix.browser }}
       
-      - name: Run E2E Tests (${{ matrix.browser }})
+      - name: Run E2E Tests against Production Build (${{ matrix.browser }})
         run: npx playwright test --project=${{ matrix.browser }}
+        env:
+          CI: true
       
       - name: Upload Playwright Report (${{ matrix.browser }})
         uses: actions/upload-artifact@v4
@@ -115,10 +180,10 @@ jobs:
           retention-days: 7
 
   # ============================================
-  # JOB 4: Build Check
+  # JOB 5: Final Build Verification
   # ============================================
   build:
-    name: 🏗️ Build Check
+    name: 🏗️ Build Verification
     runs-on: ubuntu-latest
     needs: e2e-tests  # Run after all tests pass
     
@@ -135,8 +200,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      - name: Build Frontend
+      - name: Build Frontend (Production)
         run: npm run build
       
+      - name: Verify build output exists
+        run: |
+          if [ -d "dist" ]; then
+            echo "✅ Production build created successfully!"
+            ls -la dist/
+          else
+            echo "❌ Build failed - dist folder not found"
+            exit 1
+          fi
+      
       - name: ✅ All checks passed!
-        run: echo "Pipeline completed successfully!"
+        run: echo "🎉 Pipeline completed successfully! Ready for deployment."

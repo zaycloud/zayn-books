@@ -89,10 +89,43 @@ npm run test:e2e:ui
 
 The GitHub Actions pipeline runs on every push/PR to `main`:
 
-1. **Unit Tests** - Vitest (Backend logic)
-2. **API Tests** - Newman (REST endpoints)
-3. **E2E Tests** - Playwright (Full user flows)
-4. **Build Check** - Vite production build
+```
+┌─────────────┐     ┌─────────────┐
+│  🔍 Lint    │     │ 🛡️ Security │   ← Parallel (kodkvalitet + säkerhet)
+└──────┬──────┘     └──────┬──────┘
+       │                   │
+       └─────────┬─────────┘
+                 ▼
+         ┌──────────────┐
+         │ 🧪 Unit Tests │              ← Backend-logik (Vitest)
+         └──────┬───────┘
+                ▼
+         ┌──────────────┐
+         │ 📡 API Tests  │              ← REST endpoints (Newman)
+         └──────┬───────┘
+                ▼
+   ┌────────────┼────────────┐
+   ▼            ▼            ▼
+┌────────┐ ┌─────────┐ ┌─────────┐
+│Chromium│ │ Firefox │ │ WebKit  │    ← E2E Tests (Playwright) - PRODUCTION BUILD
+└────┬───┘ └────┬────┘ └────┬────┘
+     └──────────┼───────────┘
+                ▼
+        ┌──────────────┐
+        │ 🏗️ Build      │              ← Final verification
+        └──────────────┘
+```
+
+### Pipeline Jobs:
+
+| Job | Tool | Description |
+|-----|------|-------------|
+| **Lint** | ESLint | Code quality & style check |
+| **Security** | npm audit | Vulnerability scanning |
+| **Unit Tests** | Vitest | Backend logic testing |
+| **API Tests** | Newman | REST endpoint testing |
+| **E2E Tests** | Playwright | Full user flow testing (3 browsers) |
+| **Build** | Vite | Production build verification |
 
 ## 📝 API Endpoints
 
@@ -102,6 +135,142 @@ The GitHub Actions pipeline runs on every push/PR to `main`:
 | POST | `/api/books` | Create a book |
 | PUT | `/api/books/:id` | Update a book |
 | DELETE | `/api/books/:id` | Delete a book |
+
+### API Documentation (Request/Response)
+
+#### GET /api/books
+Retrieve all books from the database.
+
+**Request:**
+```bash
+curl http://localhost:3000/api/books
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "success",
+  "data": [
+    {
+      "id": 1,
+      "title": "The Hobbit",
+      "author": "J.R.R. Tolkien",
+      "year": 1937,
+      "genre": "Fantasy"
+    }
+  ]
+}
+```
+
+---
+
+#### POST /api/books
+Create a new book.
+
+**Request:**
+```bash
+curl -X POST http://localhost:3000/api/books \
+  -H "Content-Type: application/json" \
+  -d '{"title": "1984", "author": "George Orwell", "year": 1949, "genre": "Dystopian"}'
+```
+
+**Request Body (required fields marked with *):**
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| title | string | * | Book title |
+| author | string | * | Author name |
+| year | number | | Publication year |
+| genre | string | | Book genre |
+
+**Response (201 Created):**
+```json
+{
+  "message": "success",
+  "data": {
+    "id": 2,
+    "title": "1984",
+    "author": "George Orwell",
+    "year": 1949,
+    "genre": "Dystopian"
+  }
+}
+```
+
+**Error Response (400 Bad Request):**
+```json
+{
+  "error": "Title and Author are required"
+}
+```
+
+---
+
+#### PUT /api/books/:id
+Update an existing book.
+
+**Request:**
+```bash
+curl -X PUT http://localhost:3000/api/books/1 \
+  -H "Content-Type: application/json" \
+  -d '{"title": "The Hobbit (Updated)", "author": "J.R.R. Tolkien", "year": 1937, "genre": "Fantasy"}'
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "success",
+  "data": {
+    "id": 1,
+    "title": "The Hobbit (Updated)",
+    "author": "J.R.R. Tolkien",
+    "year": 1937,
+    "genre": "Fantasy"
+  }
+}
+```
+
+**Error Response (404 Not Found):**
+```json
+{
+  "error": "Book not found"
+}
+```
+
+---
+
+#### DELETE /api/books/:id
+Delete a book by ID.
+
+**Request:**
+```bash
+curl -X DELETE http://localhost:3000/api/books/1
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "deleted"
+}
+```
+
+**Error Response (404 Not Found):**
+```json
+{
+  "error": "Book not found"
+}
+```
+
+---
+
+### HTTP Status Codes
+
+| Code | Meaning | When |
+|------|---------|------|
+| 200 | OK | Successful GET, PUT, DELETE |
+| 201 | Created | Successful POST |
+| 400 | Bad Request | Validation failed (missing title/author) |
+| 404 | Not Found | Book ID doesn't exist |
+| 500 | Server Error | Database error |
 
 ## 🔒 Security
 

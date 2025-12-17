@@ -38,7 +38,8 @@ export default defineConfig({
       timeout: 120000,
     },
     {
-      command: 'npm run dev',
+      // Use `preview` (production) when running in CI, else use dev server for local runs
+      command: process.env.CI ? 'npm run preview' : 'npm run dev',
       url: 'http://localhost:5173',
       reuseExistingServer: !process.env.CI,
       timeout: 120000,
