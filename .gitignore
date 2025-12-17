@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Database
+*.db
+*.sqlite
+
+# Environment
+.env
+.env.local
+
+# Build outputs
+dist/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+test-results/
+playwright-report/
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
